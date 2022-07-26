@@ -26,7 +26,18 @@ serão conduzidas seguindo duas abordagens, baseados em linha de comando
 
 ## 0. Organização de Dados
 
-### 0.1. Sequências
+### 0.1. Login no servidor
+
+Para os usuários baseados em Windows é necessário a instalação do
+software
+[MobaXterm](https://mobaxterm.mobatek.net/download-home-edition.html#:~:text=MobaXterm%20Home%20Edition%20v22.1%0A(Installer%20edition)).
+
+Após instalado, clique na opção *session*, escolha o icone ssh e
+preencha com os dados do login: *remote host* (endereço IP). Depois
+selecione a opção *specify name* e preencha com o nome do usuario. Por
+último será solicitada a senha. Você pode salvar os dados do login.
+
+### 0.2. Sequências
 
 As sequências foram obtidas do sequenciamento na plataforma Illumina
 usando o protocolo *paired-end* (2 x 250 bp) de cepa bacteriana EP216.
@@ -88,3 +99,6 @@ a organização.
     pwd
 
 ### 0.3. Upload de sequências
+
+As sequências devem ser descarregadas da plataforma da facility
+contratada e subidas ao servidor usando o software MobaXterm
