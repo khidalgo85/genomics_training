@@ -9,7 +9,7 @@
 
 # Tutorial para análises de genomas
 
-**Autores: MsC. Kelly Hidalgo e MsC. Luis Gabriel Cueva Yesquén**
+**Autores: MsC. Kelly Hidalgo** **MsC. Luis Gabriel Cueva Yesquén**
 
 Pipeline para montagem e anotação taxonômica e funcional de genomas de
 isolados. Para este tutorial será usado como modelo um genoma
@@ -23,3 +23,68 @@ serão conduzidas seguindo duas abordagens, baseados em linha de comando
 # WORKFLOW
 
 <img src="imgs/workflow.png" align="center"/>
+
+## 0. Organização de Dados
+
+### 0.1. Sequências
+
+As sequências foram obtidas do sequenciamento na plataforma Illumina
+usando o protocolo *paired-end* (2 x 250 bp) de cepa bacteriana EP216.
+
+**Arquivos**
+
+-   `216_R1.fastq`
+-   `216_R2.fastq`
+
+> **Dica:** Usualmente os arquivos são entregues com nomes codificados
+> do equipamento usado para o sequenciamento que não são informativos
+> para o usuário. Sempre renomee os arquivos com palavras de fácil
+> identificação. Evite espaços e caracteres especiais. Para separar
+> palavras prefira *underline* `_`.
+
+### 0.2. Criação de diretórios
+
+Os seguintes comandos são para criar, organizar e explorar diretórios.
+
+-   Crie um diretório base para todo o processo usando o comando `mkdir`
+    (*make dir*)
+
+<!-- -->
+
+    mkdir genomica
+
+-   Entre ao novo diretório usando o comando `cd` (*change directory*)
+
+<!-- -->
+
+    cd genomica/
+
+-   Crie um novo diretório para armazenar as sequências brutas.
+
+**Dica:** Dado que a maiora das etapas do workflow são sequenciais, é
+recomendável nomear os diretórios começando com um número e assim manter
+a organização.
+
+    mkdir 00.RawData
+
+-   Crie os demais diretórios em uma linha de comando só
+
+<!-- -->
+
+    mkdir 01.FastqcReports 02.CleanData 03.Assembly 04.QualityAssembly 05.GenePrediction 06.TaxonomyAnnotation 07.FunctionalAnnotation
+
+-   Use o comando `ll` (*list*) para listar o conteúdo do diretório
+    atual
+
+<!-- -->
+
+    ll
+
+-   O comando `pwd` (*print working directory*) imprime o caminho ao
+    diretório atual
+
+<!-- -->
+
+    pwd
+
+### 0.3. Upload de sequências
