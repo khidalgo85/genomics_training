@@ -199,6 +199,43 @@ No [manual](http://cab.spbu.ru/files/release3.15.2/manual.html) encontra mais de
 
 # GUI
 
+Existem diversas plataformas online nas quais podem ser realizadas diversas análises bioinformáticas. As mais conhecidas são [KBase](https://www.kbase.us/) e [Galaxy](https://usegalaxy.org/). Neste tutorial será usado o KBase, além da plataforma de montagem e anotação do [NCBI](https://www.ncbi.nlm.nih.gov/genome/annotation_prok/).
+
+## 0. Organização de Dados
+
+### 0.1. Criando uma conta no KBase
+
+Ingresse no link para criar uma conta: [singup!](https://narrative.kbase.us/#signup)
+
+[Neste link](https://docs.kbase.us/getting-started/narrative) você pode visitar o extenso manual/tutorial da plataforma.
+
+<img src="imgs/kbase1.png" align="center"/>
+
+Para facilitar acesse através de uma conta Google
+
+<img src="imgs/kbase2.png" align="center"/>
+
+No KBase, você pode crias fluxos de trabalho compartilháveis e reproduzíveis chamados **Narrativas** que incluem dados, etapas de análise, resultados, visualizações e comentários. 
+
+### 0.2. Upload dos dados
+
+O primeiro passo é criar uma nova narrativa clicando em *+ New Narrative*. Uma vez criada a nova narrativa, troque o nome dela para Genômica, clicando no título acima a esquerda *Untitled*
+
+<img src="imgs/kbase3.png" align="center"/>
+
+Na seção **DATA** será aberta uma aba para carregar os dados desde uma pasta no seu computador. Selecione os arquivos `216_R1.fastq` e `216_R2.fastq`
+
+Após subidos os arquivos na plataforma, eles devem ser importadas para dentro da narrativa, para isto é necessário selecionar o tipo de dados. Para o caso das sequências deste tutorial, trata-se do formato *FASTQ Reads Noninterleaved*, clique em *Import selected*. 
+
+<img src="imgs/kbase4.png" align="center"/>
+
+Automaticamente será aberta a primeira ferramenta a ser usada  *Import from Staging Area*. Preencha os campos conforme a foto e clique em *Run*.
+
+<img src="imgs/kbase5.png" align="center"/>
+
+
+A ferramenta primeiro fará a leitura dos arquivos e depois irá juntar eles num objeto só (*genome216*) e ficaram disponíveis dentro da narrativa na aba a esquerda *DATA*
+
 
 
 
