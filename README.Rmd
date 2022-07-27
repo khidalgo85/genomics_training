@@ -38,11 +38,16 @@ Pipeline para montagem e anotação taxonômica e funcional de genomas de isolad
 
 <img src="imgs/workflow.png" align="center"/>
 
+
+# CLI
+
 ## 0. Organização de Dados
 
 ### 0.1. Login no servidor
 
 Para os usuários baseados em Windows é necessário a instalação do software [MobaXterm](https://mobaxterm.mobatek.net/download-home-edition.html#:~:text=MobaXterm%20Home%20Edition%20v22.1%0A(Installer%20edition)).
+
+<img src="imgs/SSH_MobaXterm.png" align="center"/>
 
 Após instalado, clique na opção *session*, escolha o icone ssh e preencha com os dados do login: *remote host* (endereço IP). Depois selecione a opção *specify name* e preencha com o nome do usuario. Por último será solicitada a senha. Você pode salvar os dados do login.
 
@@ -73,7 +78,7 @@ cd genomica/
 ```
 * Crie um novo diretório para armazenar as sequências brutas.
 
-**Dica:** Dado que a maiora das etapas do workflow são sequenciais, é recomendável nomear os diretórios começando com um número e assim manter a organização.
+> **Dica:** Dado que a maiora das etapas do workflow são sequenciais, é recomendável nomear os diretórios começando com um número e assim manter a organização.
 
 ```
 mkdir 00.RawData
@@ -90,19 +95,109 @@ mkdir 01.FastqcReports 02.CleanData 03.Assembly 04.QualityAssembly 05.GenePredic
 ll
 ```
 
-* O comando `pwd`  (*print working directory*) imprime o caminho ao diretório atual
-
-```
-pwd
-```
 
 ### 0.3. Upload de sequências
 
-As sequências devem ser descarregadas da plataforma da facility contratada e subidas ao servidor usando o software MobaXterm
+As sequências devem ser descarregadas da plataforma da facility contratada e subidas ao servidor usando o software MobaXterm. Coloque os arquivos no diretório `00.RawData`
+
+<img src="imgs/Uploud_MobaXterm.png" align="center"/>
+
+> **Dica:** Para aprender mais comandos úteis use o seguinte [tutorial de UNIX](https://github.com/khidalgo85/Unix)
+
+## 1. Controle de Qualidade
+
+### 1.1. Checagem da qualidade
+
+Nesta etapa será acessada à qualidade das sequências usando a ferramenta [FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+
+Antes de rodar a análise, você deve saber que nos servidores as ferramentas são instaladas usando um gerenciador de programas, chamado Anaconda. O qual facilita a instalação das ferramentas em ambientes virtuais separados, isto porque elas são desenvolvidas en diferentes linguagens de programação (i.e. python, perl, R, etc.). Por tanto precisa ser ativado o ambiente virtual onde foi instalado o FastQC, o qual é `quality`
+
+> **Dica:** Para saber que ferramentas estão instaladas e em que ambiente virtual revise o documento `/home/bioinfo/Documents/ferramentas.txt`
+
+* Ative o ambiente `quality`
+```
+source /home/anaconda3/bin/activate quality
+```
+Veja que antes do nome do usuário no prompt deve aparecer o nome do ambiente entre parêntese.
+
+* Execute o comando do FastQC
+
+```
+fastqc -t 10 00.RawData/* -o 01.FastqcReports/
+```
+
+**Sintaxe**
+
+```
+fastqc -t <num núcleos> <input_directory> -o <output_directory>
+```
+
+> **Dica:** **TODAS** as ferramentas bioinformáticas tem um manual de ajuda que pode ser acessado pela linha de comando, usando o flag `-h` ou `--help`. **ANTES de executar uma ferramenta sempre leia o manual**. Este comando lista todos os argumentos disponíveis para a ferramenta e explica como devem/podem ser usados.
+
+> **Atenção:** Para o uso correto e seguro do servidor verifique o número de núcleos disponíveis para o usuário no momento da análise. **NUNCA** trabalhe com o total dos núcleos da máquina.
+
+Os arquivos `.html` gerados no diretório `01.FastqcReports` podem ser baixados usando os recursos gráficos de MobaXterm.
+
+Para maiores detalhes sobre a interpretação e análise dos relatórios do FastQC consulte [aqui](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/Help/3%20Analysis%20Modules/).
+
+
+### 1.2. Trimagem e filtragem de sequências
+
+A remoção de sequências e bases de baixa qualidade deve ser feita baseada nos relatórios da checagem da qualidade. O programa [Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic), através de diversos argumentos realiza a filtragem e trimagem das sequências.
+
+* Segundo os resultados obtidos da qualidade execute o seguinte comando do Trimmomatic:
+```
+trimmomatic PE -threads 10 00.RawData/216_R1.fastq 00.RawData/216_R2.fastq 02.CleanData/216_R1.pair.fastq 02.CleanData/216_R1.unpair.fastq 02.CleanData/216_R2.pair.fastq 02.CleanData/216_R2.unpair.fastq LEADING:3 TRAILING:3 CROP:249 HEADCROP:15 SLIDINGWINDOW:4:15 MINLEN:100
+```
+
+**Sintaxe**
+
+```
+trimmomatic PE -threads <num_nucleos> <file_input_R1> <file_input_R2> <file_output_pair_R1> <file_output_unpair_R1> <file_output_pair_R2> <file_output_unpair_R2> [argumentos]
+```
+
+Consulte o [manual](http://www.usadellab.org/cms/uploads/supplementary/Trimmomatic/TrimmomaticManual_V0.32.pdf) da ferramenta para obter mais detalhes.
+
+Verifique que a etapa de trimagem e filtragem foi bem sucedida executando FastQC para as sequências pareadas (`02.CleanData/216_R1.pair.fastq` e `02.CleanData/216_R2.pair.fastq`).
+
+
+## 2. Montagem *de novo*
+
+### 2.1. Spades
+
+Uma montagem é o processo de alinhamento de sequências curtas com o objetivo de recuperar uma sequência maior. No caso da montagem *de novo* são usados algorítmos baseados em *k-mers*, que são subsequências com tamanho definido pelo usuário (i.e. 21-mers).
+
+O programa [Spades](https://github.com/ablab/spades) está instalado no ambiente `assembly`, por tanto deve ser ativado com o seguinte comando
+
+```
+source /home/anaconda3/bin/activate assembly
+```
+
+A montagem será realizada executando o comando:
+
+>**Dica:** O program nohup permite executar tarefas em segundo plano, com o objetivo de manter a execução do comando ainda com a perda da conexão.
+
+```
+nohup spades.py --careful -1 02.CleanData/216_R1.pair.fastq -2 02.CleanData/216_R2.pair.fastq -k 21,33,55,77,99,111,127 -o 03.Assembly/ -t 10
+```
+**Sintaxe**
+```
+spades.py -1 <pair1> -2 <pair2> -k <kmers list> -o <output_directory> -t <num_nucleos>
+```
+
+O flag `--careful` tenta reduzir o número de mismatches e indels curtos. É recomendado para montagem de genomas de procariotas.
+
+No [manual](http://cab.spbu.ru/files/release3.15.2/manual.html) encontra mais detalhes.
 
 
 
 
+
+
+
+
+
+# GUI
 
 
 
