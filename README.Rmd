@@ -86,7 +86,7 @@ mkdir 00.RawData
 
 * Crie os demais diretórios em uma linha de comando só
 ```
-mkdir 01.FastqcReports 02.CleanData 03.Assembly 04.QualityAssembly 05.GenePrediction 06.TaxonomyAnnotation 07.FunctionalAnnotation
+mkdir 01.FastqcReports 02.CleanData 03.Assembly 04.QualityAssembly 05.TaxonomyAnnotation 06.GenePrediction 07.FunctionalAnnotation
 ```
 
 * Use o comando `ll` (*list*) para listar o conteúdo do diretório atual
@@ -94,7 +94,6 @@ mkdir 01.FastqcReports 02.CleanData 03.Assembly 04.QualityAssembly 05.GenePredic
 ```
 ll
 ```
-
 
 ### 0.3. Upload de sequências
 
@@ -190,12 +189,85 @@ O flag `--careful` tenta reduzir o número de mismatches e indels curtos. É rec
 No [manual](http://cab.spbu.ru/files/release3.15.2/manual.html) encontra mais detalhes.
 
 
+### 2.2. Avaliação da montagem
 
+A montagem precisa ser avaliada através de métricas que representam qualidade do genoma. Neste paso será calculado o N50, o número de contigs, o tamanho do genoma, a completude e o nível de contaminação. 
 
+Primeiro será executado o progama [Quast](http://quast.sourceforge.net/) o qual está instalado no ambiente `quast`.
 
+```
+source /home/anaconda3/bin/activate quast
+```
 
+Para gerar o relatório com as métricas use o seguinte comando:
 
+```
+quast 03.Assembly/scaffolds.fasta -o 04.QualityAssembly/ --threads 10
+```
+**Sintaxe**
+```
+quast <input_assembly> -o <output_directory> -t <num_nucleos> [opções]
+```
 
+Descarregue o arquivo `04.QualityAssembly/report.html` onde poderá explorar todas as métricas de qualidade. 
+
+> **Dica:** Esta ferramenta permite comparar diversas montagens das mesmas sequências obtidas de diferentes montadores e/ou executados com diferentes parâmetros. Esta estratega permite escolher a melhor montagem. Para maiores detalhes, visete o [manual](http://quast.sourceforge.net/docs/manual.html)
+
+Contigs com tamanho menor de 600 bp não tem um valor representativo na montagem, é recomendável filtrar essas sequências. 
+
+O programa bbmap tem um script que permite realizar a filtragem por tamanho. bbmap está instalado no ambiente bioinfo:
+
+``` 
+source /home/anaconda3/bin/activate bioinfo
+
+reformat.sh in=03.Assembly/scaffolds.fasta out=03.Assembly/216_scaffolds_filtered.fasta minlength=600
+```
+
+Para avaliar a completude e a contaminação da montagem é usada a ferramenta [CheckM](https://github.com/Ecogenomics/CheckM/wiki). A qual usa uma base de dados própria de genes ortologos de cópia única. 
+
+Ative o ambiente `checkm`
+```
+source /home/anaconda3/bin/activate checkm
+```
+
+Execute a ánalise para a montagem completa e filtrada com o seguinte comando:
+```
+checkm lineage_wf 03.Assembly/ 04.QualityAssembly/ -t 10 -x fasta --tab > 04.QualityAssembly/output.txt
+```
+**Sintaxe**
+
+```
+checkm lineage_wf <input_directory/> <output_directory/> -t <num_nucleos> -x <format> --tab > output.txt
+```
+
+Explore o arquivo de saída `04.QualityAssembly/output.txt` usando o comando `less`. Descarregue o relatório no seu computador.
+
+Para mais detalhes sobre a interpretação do relatório visite este [link.](https://www.biostars.org/p/447744/)
+
+## 3. Anotação Taxonômica
+
+A classificação baseada em dados de genoma tem maior poder ressolutivo em comparação ao usar apenas um gene marcado, desde que esta abordagem analisa múltiplos genes que refletem de forma mais robusta a relações de parêntesco do organismo de interesse. O [GTDB-tk](https://ecogenomics.github.io/GTDBTk/index.html) é uma ferramenta que identifica 120 genes marcadores e os compara com uma base de dados curada e constamente atualizada. 
+
+Esta ferramenta está instalada no ambiente `gtdbtk`
+```
+source /home/anaconda3/bin/activate gtdbtk
+```
+
+Execute o seguinte comando:
+```
+gtdbtk classify_wf --genome_dir 03.Assembly --out_dir 05.TaxonomyAnnotation/ -x fasta --cpus 10
+```
+
+**Sintaxe**
+```
+gtdbtk classify_wf --genome_dir <input_directory/> --out_dir <output_directory/> -x <format> --cpus <num_nucleos>
+```
+
+O programa gera vários arquivos de saída que estão resumidos no `05.TaxonomyAnnotation/gtdbtk.bac120.summary.tsv`.
+
+## 4. Anotação Funcional
+
+Under construction...
 
 # GUI
 
