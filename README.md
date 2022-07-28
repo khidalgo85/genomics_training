@@ -364,4 +364,47 @@ from Staging Area*. Preencha os campos conforme a foto e clique em
 
 A ferramenta primeiro fará a leitura dos arquivos e depois irá juntar
 eles num objeto só (*genome216*) e ficaram disponíveis dentro da
-narrativa na aba a esquerda *DATA*
+narrativa na aba a esquerda *DATA*. As ferramentas a serem usadas podem
+ser procuradas na aba *APPS* a esquerda, na opção de busca.
+
+<img src="imgs/kbase6.png" align="center"/>
+
+## 1. Controle de Qualidade
+
+### 1.1. Checagem da qualidade
+
+Nesta etapa será acessada à qualidade das sequências usando a ferramenta
+[FastQC](https://www.bioinformatics.babraham.ac.uk/projects/fastqc/).
+Procure no catálogo e clique no nome. Imediatamente será inserida na
+narrativa logo após a ferramenta de importação.
+
+Selecione o objeto *genome216* no input (*Read Library/RNA-seq Sample
+Set*)
+
+<img src="imgs/kbase7.png" align="center"/>
+
+As análises no KBase podem demorar um pouco mais do normal de um
+servidor, devido que se trata de un servidor público usado por muitas
+pessoas ao mesmo tempo.
+
+Uma vez a análise seja concluida, você terá acesso aos resultados na aba
+*Results*. Na seção *Report* serão disponibilizados os relatórios
+FastQC. Se você quiser descarregá-los na seção *Files* se encontram os
+arquivos para cada pair.
+
+<img src="imgs/kbase8.png" align="center"/>
+
+### 1.2. Trimagem e filtragem de sequências
+
+A remoção de sequências e bases de baixa qualidade deve ser feita
+baseada nos relatórios da checagem da qualidade. O programa
+[Trimmomatic](http://www.usadellab.org/cms/?page=trimmomatic), através
+de diversos argumentos realiza a filtragem e trimagem das sequências.
+Procure pela ferramenta na barra de busca e adicione ela na narrativa.
+
+No input, selecione o objeto *genome216*. Clique em *show advanced* para
+modificar os argumentos de corte e filtragem. Segundo os resultados
+obtidos no relatório de qualidade, insira os parâmetros como apresentado
+na imagem:
+
+<img src="imgs/kbase9.png" align="center"/>
