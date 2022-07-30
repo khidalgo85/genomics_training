@@ -307,7 +307,86 @@ O programa gera vários arquivos de saída que estão resumidos no
 
 ## 4. Anotação Funcional
 
-Under construction…
+### 4.1. Predição de ORFs (*Open Reading Frames*)
+
+O objetivo desta etapa é procurar as ORFs dentro dos contig/scaffols. Ou
+seja, predizer onde iniciam e terminam os genes. Basicamente o programa
+procura por codons de inicio e de parada. Para este objetivo será usada
+a ferramenta [Prodigal](https://github.com/hyattpd/prodigal/wiki).
+
+Primeiro o ambiente `annotation` será ativado
+
+    source /home/anaconda3/bin/activate annotation
+
+Para rodar o program utilize o seguinte comando:
+
+    prodigal -i 03.Assembly/216_scaffolds_filtered.fasta -o 06.GenePrediction/216_scaffolds_filtered_orf -a 06.GenePrediction/216_scaffolds_filtered_proteins.faa -d 06.GenePrediction/216_scaffolds_filtered_ORFnucleotides.fa -s 06.GenePrediction/216_scaffolds_filtered_genes
+
+**Sintaxe**
+
+    prodigal -i <input_assembly.fasta> -o <output_gbk_file> -a <output_protein_seq_file> -d <output_nucleotides_seq_file> -s <output_coordinates_file>
+
+O arquivo `06.GenePrediction/216_scaffolds_filtered_orf` está escrito em
+formato genbank incluindo as sequências codificadoras e não
+codificadoras e as posições delas em cada contig. Adicionalmente, o
+programa gerá arquivos com as sequências nucleotídicas
+(`06.GenePrediction/216_scaffolds_filtered_ORFnucleotides.faa`) e
+proteícas (`06.GenePrediction/216_scaffolds_filtered_proteins.fa`) de
+cada gene predito.
+
+### 4.2. Atribuição Funcional das ORFs
+
+Nesta etapa as ORFs preditas serão funcionalmente anotadas por
+homologia, usando bases de dados e um alinhador. Poderão ser usadas as
+sequências nucleotídicas ou proteícas.
+
+Para o alinhamento será usado o programa
+[Diamond](https://github.com/bbuchfink/diamond/wiki/3.-Command-line-options),
+e uma base de dados acurada como
+[KEGG](http://eggnog5.embl.de/#/app/home).
+
+Lembre-se de ter ativado o ambiente que contém o Diamond (`annotation`).
+
+Use o seguinte comando para rodar Diamond:
+
+    nohup diamond blastx --threads 10 --more-sensitive -k 1 -f 6 qseqid qlen sseqid sallseqid slen qstart qend sstart send evalue bitscore score length pident qcovhsp --id 60 --query-cover 60 --db /home/bioinfo/Documents/databases/diamond/keggdb.dmnd --query 06.GenePrediction/216_scaffolds_filtered_ORFnucleotides.fa -o 07.FunctionalAnnotation/216_scaffolds_filtered_keggdb.txt --tmpdir /dev/shm &
+
+O arquivo de output é uma tabela que contém os códigos dos genes e as
+anotações (número KEGG), além de outras informações relacionadas ao
+alinhamento de cada sequência (i.e. cobertura, % de identidade). Devido
+a que os genes foram anotados apenas com os números KEGG, é necessário
+cruzar esta informação com as anotações detalhadas para cada número
+KEGG, que indicam a função e categoria dos genes. A continuação
+encontrará uma série de passos para obter a tabela final de anotação
+funcional:
+
+1.  Separar a coluna dos códigos KEGG
+
+<!-- -->
+
+    perl -pe 's/\|?(?:\s+gi|ref)?\|\s*/\t/g' 07.FunctionalAnnotation/216_scaffolds_filtered_keggdb.txt > 07.FunctionalAnnotation/216_scaffolds_filtered_keggdb_formated.txt
+
+2.  Cortar as colunas 1 (Contig ID) e 4 (KEGG ID) e gravar em um novo
+    arquivo
+
+<!-- -->
+
+    cut -f1,4 07.FunctionalAnnotation/216_scaffolds_filtered_keggdb_formated.txt > 07.FunctionalAnnotation/216_ID_contigs_keggs.tsv
+
+3.  Ordenando
+
+<!-- -->
+
+    sort -k2,2 07.FunctionalAnnotation/216_ID_contigs_keggs.tsv > 07.FunctionalAnnotation/216_ID_contigs_keggs_sorted.tsv
+
+4.  Assignação randômica
+
+<!-- -->
+
+    cat 07.FunctionalAnnotation/216_ID_contigs_keggs_sorted.tsv | while read line ; do echo "$line" | join -1 2 -2 1 -e"NA" -o1.1,0,2.2,2.3,2.4,2.5 -t $'\t' - /home/bioinfo/Documents/databases/diamond/kegg_sort.tsv | shuf -n1 >> 07.FunctionalAnnotation/216_keggs_randomic_analysis.tsv ; done
+
+Descarregue e explore a tabela final de anotações
+`07.FunctionalAnnotation/216_keggs_randomic_analysis.tsv`.
 
 # GUI
 
