@@ -487,3 +487,102 @@ obtidos no relatório de qualidade, insira os parâmetros como apresentado
 na imagem:
 
 <img src="imgs/kbase9.png" align="center"/>
+
+A análise terá terminado quando mostrar a palavra *Sucess*. Explore os
+resultados clicando na aba *Results*
+
+<img src="imgs/kbase10.png" align="center"/>
+
+Perceba que na seção *DATA*, agora devem aparecer novos objetos criados
+após a trimagem. Esses novos elementos são as sequências limpas pareadas
+(*cleandata\_paired*), e as sequências não pareadas forward
+(*cleandata\_unpaired\_fwd*) and reverse (*cleandata\_unpaired\_rev*).
+
+Após a limpeza das sequências é recomendável repetir a análise com
+Fastqc para ver a qualidade das sequências filtradas pareadas
+(*cleandata\_paired*).
+
+## 2. Montagem *de novo*
+
+### 2.1. Spades
+
+Uma montagem é o processo de alinhamento de sequências curtas com o
+objetivo de recuperar uma sequência maior. No caso da montagem *de novo*
+são usados algorítmos baseados em *k-mers*, que são subsequências com
+tamanho definido pelo usuário (i.e. 21-mers).
+
+Procure o montador [Spades](https://github.com/ablab/spades) na barra de
+busca na seção *APPS* e coloque ele dentro da narrativa para ter acesso
+as funções dele.
+
+Clique em *show advance* para modificar os parâmetros da montagem:
+
+<img src="imgs/kbase11.png" align="center"/>
+
+Ao rodar Spades dentro do KBase, uma vez terminada a montagem,
+automaticamente será rodado o program
+[Quast](http://quast.sourceforge.net/) para analisar a qualidade. Você
+pode ter acesso ao relatório de saída do Quast na aba *Results*.
+<img src="imgs/kbase12.png" align="center"/>
+
+Descarregue o relatório na seção *Links*, clicando no link *QUAST
+report* onde poderá explorar todas as métricas de qualidade.
+
+A montagem (*SPAdes.Assembly*) deve aparecer na aba *DATA*.
+
+### 2.2. Avaliação da montagem
+
+Contigs com tamanho menor de 600 bp não tem um valor representativo na
+montagem, é recomendável filtrar essas sequências. Dentro do KBase
+existe uma ferramenta chamada *Filter Assembled Contigs by Length* que
+pode ser usada para este objetivo.
+
+<img src="imgs/kbase13.png" align="center"/>
+
+Será criado o novo objeto, chamado *assembly\_filtered*
+
+<img src="imgs/kbase14.png" align="center"/>
+
+Se você filtrou a montagem, daqui para frente você tem duas montagens.
+Nos passos seguintes avalie as duas montagens para ter certeza que a
+filtragem não impactou na qualidade da completude e da anotação de
+genes.
+
+Para avaliar a completude e a contaminação da montagem é usada a
+ferramenta [CheckM](https://github.com/Ecogenomics/CheckM/wiki). A qual
+usa uma base de dados própria de genes ortologos de cópia única.
+
+> **Dica:** Se tiver mais de um assembly, você pode criar um
+> *AssemblySet* para colocar todos dentro de um objeto só, e assim
+> facilitar as análises, podendo fazer vários elementos ao mesmo tempo.
+> Basta procurar na barra de buscas de *APPS* *Build AssemblySet*.
+
+Procure o CheckM no catálogo de ferramentas e coloque ele dentro da
+narrativa. Nas opções avançadas, selecione *full tree* no *Reference
+Tree* parameter, e *save* no *Save All Plots*. Uma vez finalizada a
+análise, na aba *Results*, encontrará um gráfico apresentando o
+resultado. Clicando no link *CheckM Table*, poderá obter as informações
+de Completude e Contamination, além da linagem marcadara usada para a
+análise.
+
+<img src="imgs/kbase15.png" align="center"/>
+
+<img src="imgs/kbase16.png" align="center"/>
+
+Na seção *Files*, se encontram os arquivos de saída gerados para serem
+descarregados.
+
+## 3. Anotação Taxonômica
+
+A classificação baseada em dados de genoma tem maior poder ressolutivo
+em comparação ao usar apenas um gene marcado, desde que esta abordagem
+analisa múltiplos genes que refletem de forma mais robusta a relações de
+parêntesco do organismo de interesse. O
+[GTDB-Tk](https://ecogenomics.github.io/GTDBTk/index.html) é uma
+ferramenta que identifica 120 genes marcadores e os compara com uma base
+de dados curada e constamente atualizada.
+
+Coloque a ferramenta GTDB-Tk dentro da narrativa, e clique em *show
+advanced*:
+
+<img src="imgs/kbase17.png" align="center"/>
