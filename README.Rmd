@@ -456,5 +456,35 @@ Coloque a ferramenta GTDB-Tk dentro da narrativa, e clique em *show advanced*:
 
 <img src="imgs/kbase17.png" align="center"/>
 
+O resultado será uma tabela com a classificação taxonômica por várias abordagens.
+
+<img src="imgs/kbase18.png" align="center"/>
+
+## 4. Anotação Funcional
+
+Dentro do KBase tem várias opções para fazer a assignação funcional, tais como RASTtk e Prokka. O dois farão primeiro a predição das ORFs e depois a anotação. 
+
+**RASTtk**
+
+Procure no catálogo e escolha *Annotate Genome/Assembly with RASTtk* e insira na narrativa.
+
+<img src="imgs/kbase19.png" align="center"/>
+
+O resultado pode ser acessado na aba *Results*. Alí encontrará 
+varias seções. 
+
+<img src="imgs/kbase20.png" align="center"/>
+
+Em *Objects* estará o novo objeto criado *AssemblyAnnotation*, clicando nele abrirá na narrativa uma tabela interativa onde pode explorar e procurar genes, além de uma aba para explorar os contigs. 
+
+<img src="imgs/kbase21.png" align="center"/>
+
+Na seção *Report* tem também uma tabela interativa menos detalhada com os genes anotados. *Summary* apresenta um resumo da análise, com números de genes encontrados, no codificantes, etc. 
+
+
+
+
+
+
 
 
