@@ -51,6 +51,11 @@ usando o protocolo *paired-end* (2 x 250 bp) de cepa bacteriana EP216.
 -   `216_R1.fastq`
 -   `216_R2.fastq`
 
+Para descarregar os arquivos
+[R1](https://drive.google.com/file/d/1JOMlc0U3Kku0ukvgLMbQG3mMoy5KvBkJ/view?usp=sharing)
+e
+[R2](https://drive.google.com/file/d/1JPB5FFk0WHC6AiEkDeokB3DkCPwI_EZ4/view?usp=sharing).
+
 > **Dica:** Usualmente os arquivos são entregues com nomes codificados
 > do equipamento usado para o sequenciamento que não são informativos
 > para o usuário. Sempre renomee os arquivos com palavras de fácil
@@ -530,7 +535,43 @@ report* onde poderá explorar todas as métricas de qualidade.
 
 A montagem (*SPAdes.Assembly*) deve aparecer na aba *DATA*.
 
-### 2.2. Avaliação da montagem
+### 2.2. Skesa
+
+Os desenvolvedores do NCBI criaram a plataforma automatizada
+[**RAPT**](https://ncbiinsights.ncbi.nlm.nih.gov/2021/05/12/assemble-annotate-prokaryotic-genomes-webrapt/)
+de montagem e anotação funcional. O montador é a ferramenta
+[Skesa](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-018-1540-z).
+A anotação funcional segue o pipeline
+[PGAP](https://www.ncbi.nlm.nih.gov/genome/annotation_prok/), o qual usa
+como base de dados RefSeq proteins.
+
+<img src="imgs/RAPT_pipeline.png" align="center"/>
+
+Para realizar a montagem se deve submeter os arquivos R1 e R2 filtrados
+por qualidade, obtidos do KBase. Acesse à plataform
+[aqui](https://www.ncbi.nlm.nih.gov/rapt?utm_source=blog&utm_medium=referral&utm_campaign=rapt&utm_term=web&utm_content=20210512link1).
+Lembre-se que deve se cadastrar com uma conta do NCBI.
+
+<img src="imgs/RAPT_submit.png" align="center"/>
+
+O processo demorará aproximadamente 2 horas e os resultados ficaram
+disponíveis na nuvem durante 6 semanas.
+
+<img src="imgs/RAPT_work_done.png" align="center"/>
+
+Sete arquivos serão gerados e deveram ser descarregados no computador.
+Este arquivos incluem:
+
+<img src="imgs/RAPT_list_output.png" align="center"/>
+
+-   **skesa\_out.fa**: montagem em formato fasta
+-   **assembly\_stat\_report.tsv**: relatório da qualidade da montagem
+    (número de contigs, N50, etc)
+-   **ani-tax-report.txt**: relatório de identificação baseado em ANI.
+-   **annot.**\*: Anotação funcional dos genes preditos em diferentes
+    formatos.
+
+### 2.3. Avaliação da montagem
 
 Contigs com tamanho menor de 600 bp não tem um valor representativo na
 montagem, é recomendável filtrar essas sequências. Dentro do KBase
@@ -592,6 +633,16 @@ abordagens.
 
 <img src="imgs/kbase18.png" align="center"/>
 
+A identificação taxonômica com dados genômicos pode ser realizada com
+base nas métricas OGRI, que incluem o ANI e dDDH. Para calcular estas
+métricas, submeta a montagem no seguintes sites: \*
+[JSpecies](https://jspecies.ribohost.com/jspeciesws/) \* [Genome to
+genome distance
+calculator](https://www.dsmz.de/services/online-tools/genome-to-genome-distance-calculator-ggdc)
+
+Ao calcular estas métricas, deve ser incluidos os genomas de referência
+das linhagens tipo mais próximas filogenéticamente.
+
 ## 4. Anotação Funcional
 
 Dentro do KBase tem várias opções para fazer a assignação funcional,
@@ -619,3 +670,46 @@ procurar genes, além de uma aba para explorar os contigs.
 Na seção *Report* tem também uma tabela interativa menos detalhada com
 os genes anotados. *Summary* apresenta um resumo da análise, com números
 de genes encontrados, no codificantes, etc.
+
+**Prokka**
+
+Em construção…
+
+**eggNOG Mapper**
+
+Esta ferramenta permite realizar a anotação funcional de sequências
+genômicas ou de um conjunto de genes preditos em formato fasta. Nas
+opções avançadas, a plataforma permite alterar vários parâmetros como o
+tipo de base de dados, o alinhador, a cobertura e o porcentagem de
+identidade, etc. Ao submeter a montagem, deve-se preencher o campo
+*Email address* para receber uma mensagem com um link que inicia o
+processo.
+
+<img src="imgs/kbase21.png" align="center"/>
+
+Quando o processo acabar, você pode explorar as anotações na parte
+inferior do site. A busca pode ser feita baseado em nome ou código do
+gene. Alternativamente, pode descarregar a tabela de anotações em
+diferentes formatos (csv, excel, gff, etc)
+
+<img src="imgs/eggnog1.png" align="center"/>
+
+# Outras plataformas
+
+-   [PATRIC](https://patricbrc.org/) /
+    [Tutorial](https://docs.patricbrc.org/user_guides/services/genome_annotation_service.html)
+-   [Galaxy](https://usegalaxy.org/) /
+    [Tutorial](https://usegalaxy.org/welcome/new)
+-   [BlastKOALA](https://www.kegg.jp/blastkoala/) /
+    [Tutorial](https://www.kegg.jp/blastkoala/help_blastkoala.html)
+
+# Conclusões
+
+A pesar que as ferramentas apresentadas neste tutorial são executadas
+baseadas em um pipeline, elas se complementan e podem ser usadas sem
+seguir uma sequência.
+
+Imprevistos ou periodos de manutenção podem interromper a
+disponibilidade das ferramentas online. De tal forma que estar
+familiarizado com a linha de comando deve ser uma prioridade para o
+usuário.
